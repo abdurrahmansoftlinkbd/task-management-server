@@ -41,6 +41,15 @@ async function run() {
       const result = await taskCollection.deleteOne(query);
       res.send(result);
     });
+    app.patch("/tasks/:id", async (req, res) => {
+      const id = new ObjectId(req.params.id);
+      const updatedData = req.body;
+      const result = await taskCollection.updateOne(
+        { _id: id },
+        { $set: updatedData }
+      );
+      res.send(result);
+    });
 
     // users api
     app.get("/users", async (req, res) => {
