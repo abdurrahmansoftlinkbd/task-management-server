@@ -34,6 +34,10 @@ async function run() {
     });
     app.post("/tasks", async (req, res) => {
       const taskItem = req.body;
+      const tasksInCategory = await taskCollection.countDocuments({
+        category: taskItem.category,
+      });
+      taskItem.order = tasksInCategory;
       const result = await taskCollection.insertOne(taskItem);
       res.send(result);
     });
@@ -46,11 +50,16 @@ async function run() {
     app.patch("/tasks/:id", async (req, res) => {
       const id = new ObjectId(req.params.id);
       const updatedData = req.body;
-      const result = await taskCollection.updateOne(
-        { _id: id },
-        { $set: updatedData }
-      );
-      res.send(result);
+
+      try {
+        const result = await taskCollection.updateOne(
+          { _id: id },
+          { $set: updatedData }
+        );
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Failed to update task" });
+      }
     });
 
     // users api
