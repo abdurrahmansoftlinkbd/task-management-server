@@ -27,7 +27,9 @@ async function run() {
 
     // tasks api
     app.get("/tasks", async (req, res) => {
-      const tasks = await taskCollection.find().toArray();
+      const email = req.query.email;
+      const query = { userEmail: email };
+      const tasks = await taskCollection.find(query).toArray();
       res.send(tasks);
     });
     app.post("/tasks", async (req, res) => {
